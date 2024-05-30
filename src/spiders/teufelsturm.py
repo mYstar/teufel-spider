@@ -1,7 +1,10 @@
 import scrapy
 
+from src.processors.comments import CommentsProcessor
+from src.processors.gebiet_list import GebietListProcessor
 from src.processors.gebiet import GebietProcessor
 from src.processors.gipfel import GipfelProcessor
+from src.processors.wege_list import WegeListProcessor
 
 
 class TeufelsturmSpider(scrapy.Spider):
@@ -13,15 +16,11 @@ class TeufelsturmSpider(scrapy.Spider):
 
     def __init__(self):
         super().__init__()
-        self.gipfel_processor = GipfelProcessor()
-        self.gebiet_processor = GebietProcessor(self.gipfel_processor)
-
-    # def start_requests(self):
-    #     yield scrapy.FormRequest(
-    #         url="https://www.teufelsturm.de/gebiete",
-    #         formdata={"anzahl": "Alle"},
-    #         callback=self.parse
-    #     )
+        comments_processor = CommentsProcessor()
+        gipfel_processor = GipfelProcessor()
+        wege_list_processor = WegeListProcessor(comments_processor)
+        gebiet_processor = GebietProcessor(gipfel_processor, wege_list_processor)
+        self.gebiet_list_processor = GebietListProcessor(gebiet_processor)
 
     def parse(self, response, **kwargs):
-        yield from self.gebiet_processor.process(response)
+        yield from self.gebiet_list_processor.process(response)
