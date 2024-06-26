@@ -62,9 +62,10 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "src.pipelines.TeufelSpiderPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "src.pipelines.IdentityImagesPipeline": 1,
+}
+IMAGES_STORE = 'output/img/symbole/'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

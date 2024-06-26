@@ -2,6 +2,8 @@ from pathlib import Path
 
 import scrapy
 
+from src.items import ImagesItem
+
 
 class WegeListProcessor:
 
@@ -10,6 +12,13 @@ class WegeListProcessor:
 
     def process(self, response):
         self._write_wege_list_html(response.url, response.body)
+
+        # download the symbol images
+        images_item = ImagesItem()
+        image_urls = response.xpath('//img[contains(@src, "/img/symbole/")]/@src').extract()
+        absolute_urls = [response.urljoin(url) for url in image_urls]
+        images_item['image_urls'] = absolute_urls
+        yield images_item
 
         weg_comments = response.xpath("//a/@href[starts-with(., '/wege/bewertungen/anzeige.php?wegnr=')]").getall()
         weg_comments = (url for url in weg_comments)
